@@ -8,47 +8,10 @@ import nba_py.team
 import pandas as pd
 import numpy as np
 
-import datetime
-# import time
-# import functools
-
-# import pymysql
-from sqlalchemy import create_engine
-
-import sys
-sys.path.append('/Users/wonderui/OneDrive/6_Module_Package')
-sys.path.append('/Users/WangRui/OneDrive/6_Module_Package')
-import hoop_pwd
-pwd = hoop_pwd.password
-
 old_settings = np.seterr(all='print')
 np.geterr()
 
 print('modules imported')
-
-
-# create sql conn and load game stats logs ----------------------
-
-conn = create_engine('mysql+pymysql://root:%s@118.190.202.87:3306/nba_stats' % pwd)
-game_stats_logs = pd.read_sql_table('game_stats_logs', conn)
-game_stats_logs = game_stats_logs[game_stats_logs['GAME_TYPE'] != 'all_star']
-print(str(len(game_stats_logs)) + ' player stats loaded.')
-
-
-# set date ----------------------
-
-today = datetime.date.today()
-tomorrow = today + datetime.timedelta(days=1)
-someday = datetime.date(2017, 1, 1)
-
-print('date set')
-
-
-# load player list ----------------------
-
-all_players = nba_py.player.PlayerList(season='2017-18').info()
-
-print('players list loaded')
 
 
 # define functions ----------------------
@@ -65,9 +28,10 @@ def get_games(date):
                              offset=0).game_header()[['GAME_ID', 'HOME_TEAM_ID', 'VISITOR_TEAM_ID']]
 
 
-def get_players(games):
+def get_players(games, all_players):
     '''
     :param games: df, some games
+    :param all_players: df, all players list of this season
     :return: df, all players of the given games
     '''
     home_team_player = all_players[all_players['TEAM_ID'].isin(games['HOME_TEAM_ID'])][['PERSON_ID', 'TEAM_ID']]
@@ -85,8 +49,9 @@ def get_players(games):
     return pd.merge(players, team_team, on='TEAM_ID')
 
 
-def get_last_n_game_logs(player_id, game_id, n):
+def get_last_n_game_logs(game_stats_logs, player_id, game_id, n):
     '''
+    :param game_stats_logs: df, all previous game stats logs imported from sql
     :param player_id: int, player id
     :param game_id: str, game id
     :param n: int, size of games
@@ -113,72 +78,57 @@ def get_score_36(game_logs):
     return stats['SCO'].mean(), stats['SCO'].std()/stats['SCO'].mean()
 
 
-def get_ma(row, n):
+def get_ma(game_stats_logs, row, n):
     '''
+    :param game_stats_logs: df, all previous game stats logs imported from sql
     :param row: pd.series, player id and game id
     :param n: int, size of ma
     :return: float, average fantasy score of the player in n games before the given game
     '''
     player_id = row['PERSON_ID']
     game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
-    ma_n = get_score_36(get_last_n_game_logs(player_id, game_id_o, n))[0]
+    ma_n = get_score_36(get_last_n_game_logs(game_stats_logs, player_id, game_id_o, n))[0]
     return round(float(ma_n), 2)
 
 
-def get_min(row, n):
+def get_min(game_stats_logs, row, n):
     '''
-    :param row: 
-    :param n: 
-    :return: 
+    :param game_stats_logs: df, all previous game stats logs imported from sql
+    :param row: pd.series, player id and game id
+    :param n: int, size of ma
+    :return: float, average mins the player played in n games before the given game
     '''
     player_id = row['PERSON_ID']
     game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
-    min_n = get_last_n_game_logs(player_id, game_id_o, n)['MINS'].mean()
+    min_n = get_last_n_game_logs(game_stats_logs, player_id, game_id_o, n)['MINS'].mean()
     return round(float(min_n), 2)
 
 
-def get_min_cov(row, n):
+def get_min_cov(game_stats_logs, row, n):
     '''
-    :param row: 
-    :param n: 
-    :return: 
+    :param game_stats_logs: df, all previous game stats logs imported from sql
+    :param row: pd.series, player id and game id
+    :param n: int, size of ma
+    :return: float, cov of mins the player played in n games before the given game
     '''
     player_id = row['PERSON_ID']
     game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
-    min_cov_n = get_last_n_game_logs(player_id, game_id_o, n)['MINS'].std()/\
-    get_last_n_game_logs(player_id, game_id_o, n)['MINS'].mean()
+    min_cov_n = get_last_n_game_logs(game_stats_logs, player_id, game_id_o, n)['MINS'].std() / \
+                get_last_n_game_logs(game_stats_logs, player_id, game_id_o, n)['MINS'].mean()
     return round(float(min_cov_n), 3)
 
 
-def get_sco_cov(row, n):
+def get_sco_cov(game_stats_logs, row, n):
     '''
-    :param row: 
-    :param n: 
-    :return: 
+    :param game_stats_logs: df, all previous game stats logs imported from sql
+    :param row: pd.series, player id and game id
+    :param n: int, size of ma
+    :return: float, cov of scores the player get in n games before the given game
     '''
     player_id = row['PERSON_ID']
     game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
-    sco_cov_n = get_score_36(get_last_n_game_logs(player_id, game_id_o, n))[1]
+    sco_cov_n = get_score_36(get_last_n_game_logs(game_stats_logs, player_id, game_id_o, n))[1]
     return round(float(sco_cov_n), 3)
 
+
 print('functions defined')
-
-
-# execute the programme to get the expect score ----------------------
-
-games = get_games(someday)
-
-players = get_players(games)
-
-players['MA_20'] = players.apply(lambda x: get_ma(x, 20), axis=1)
-players['MA_10'] = players.apply(lambda x: get_ma(x, 10), axis=1)
-players['MA_5'] = players.apply(lambda x: get_ma(x, 5), axis=1)
-players['MIN_20'] = players.apply(lambda x: get_min(x, 20), axis=1)
-players['MIN_10'] = players.apply(lambda x: get_min(x, 10), axis=1)
-players['MIN_5'] = players.apply(lambda x: get_min(x, 5), axis=1)
-players['MIN_COV_20'] = players.apply(lambda x: get_min_cov(x, 20), axis=1)
-players['SCO_COV_20'] = players.apply(lambda x: get_sco_cov(x, 20), axis=1)
-
-players['EXP_SCO'] = round(players[['MA_20', 'MA_10', 'MA_5']].mean(axis=1) *
-                           players[['MIN_20', 'MIN_10', 'MIN_5']].mean(axis=1) / 36, 2)
-print(players)
