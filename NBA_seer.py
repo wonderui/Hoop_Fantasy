@@ -17,10 +17,10 @@ print('modules imported')
 # define functions ----------------------
 
 def get_games(date):
-    '''
+    """
     :param date: datetime.date, the match day
     :return: df, all the games on the given day
-    '''
+    """
     return nba_py.Scoreboard(month=date.month,
                              day=date.day,
                              year=date.year,
@@ -29,11 +29,11 @@ def get_games(date):
 
 
 def get_players(games, all_players):
-    '''
+    """
     :param games: df, some games
     :param all_players: df, all players list of this season
     :return: df, all players of the given games
-    '''
+    """
     home_team_player = all_players[all_players['TEAM_ID'].isin(games['HOME_TEAM_ID'])][['PERSON_ID', 'TEAM_ID']]
     home_team_player['Location'] = 'HOME'
     away_team_player = all_players[all_players['TEAM_ID'].isin(games['VISITOR_TEAM_ID'])][['PERSON_ID', 'TEAM_ID']]
@@ -42,49 +42,49 @@ def get_players(games, all_players):
     game_team = pd.concat([games[['HOME_TEAM_ID', 'GAME_ID']].rename(columns={'HOME_TEAM_ID': 'TEAM_ID'}),
                            games[['VISITOR_TEAM_ID', 'GAME_ID']].rename(columns={'VISITOR_TEAM_ID': 'TEAM_ID'})])
     players = pd.merge(players, game_team, on='TEAM_ID')
-    team_team = pd.concat([games[['HOME_TEAM_ID', 'VISITOR_TEAM_ID']].\
-                           rename(columns={'HOME_TEAM_ID': 'TEAM_ID', 'VISITOR_TEAM_ID': 'Against_Team_ID'}),
-                           games[['VISITOR_TEAM_ID', 'HOME_TEAM_ID']].\
-                           rename(columns={'VISITOR_TEAM_ID': 'TEAM_ID', 'HOME_TEAM_ID': 'Against_Team_ID'})])
+    team_team = pd.concat(
+        [games[['HOME_TEAM_ID', 'VISITOR_TEAM_ID']].rename(columns={'HOME_TEAM_ID': 'TEAM_ID',
+                                                                    'VISITOR_TEAM_ID': 'Against_Team_ID'}),
+         games[['VISITOR_TEAM_ID', 'HOME_TEAM_ID']].rename(columns={'VISITOR_TEAM_ID': 'TEAM_ID',
+                                                                    'HOME_TEAM_ID': 'Against_Team_ID'})])
     return pd.merge(players, team_team, on='TEAM_ID')
 
 
 def get_last_n_game_logs(game_stats_logs, player_id, game_id, n):
-    '''
+    """
     :param game_stats_logs: df, all previous game stats logs imported from sql
     :param player_id: int, player id
     :param game_id: str, game id
     :param n: int, size of games
     :return: df, the n game log of the player before the given game
-    '''
+    """
     player_game_logs = game_stats_logs[game_stats_logs['PLAYER_ID'] == player_id]
     last_n_game = player_game_logs[player_game_logs['GAME_ID_O'] < game_id].sort_values('GAME_ID_O').tail(n)
     return last_n_game[['MINS', 'PTS', 'AST', 'OREB', 'DREB', 'STL', 'BLK', 'TO', 'FGM', 'FGA', 'FG3M']]
 
 
 def get_score_36(game_logs):
-    '''
+    """
     :param game_logs: df, game logs
     :return: list, [0]the average fantasy score(int, 36mins) of the given game log, [1]the score cov(float) of the 
     given game log
-    '''
+    """
     convert_to_36 = lambda x: x[['PTS', 'AST', 'OREB', 'DREB', 'STL', 'BLK',
                                  'TO', 'FGM', 'FGA', 'FG3M']] * 36 / x['MINS']
     stats = game_logs.apply(convert_to_36, axis=1)
-    stats['SCO'] = stats['PTS'] * 1 + stats['AST'] * 1.5 + \
-    stats['OREB'] * 1 + stats['DREB'] * 0.7 + \
-    stats['STL'] * 2 + stats['BLK'] * 1.8 + stats['TO'] * -1 + \
-    stats['FGM'] * 0.4 + (stats['FGA'] - stats['FGM']) * -1 + stats['FG3M'] * 0.5
-    return stats['SCO'].mean(), stats['SCO'].std()/stats['SCO'].mean()
+    stats['SCO'] = stats['PTS'] * 1 + stats['AST'] * 1.5 + stats['OREB'] * 1 + stats['DREB'] * 0.7 + \
+        stats['STL'] * 2 + stats['BLK'] * 1.8 + stats['TO'] * -1 + \
+        stats['FGM'] * 0.4 + (stats['FGA'] - stats['FGM']) * -1 + stats['FG3M'] * 0.5
+    return stats['SCO'].mean(), stats['SCO'].std() / stats['SCO'].mean()
 
 
 def get_ma(game_stats_logs, row, n):
-    '''
+    """
     :param game_stats_logs: df, all previous game stats logs imported from sql
     :param row: pd.series, player id and game id
     :param n: int, size of ma
     :return: float, average fantasy score of the player in n games before the given game
-    '''
+    """
     player_id = row['PERSON_ID']
     game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
     ma_n = get_score_36(get_last_n_game_logs(game_stats_logs, player_id, game_id_o, n))[0]
@@ -92,12 +92,12 @@ def get_ma(game_stats_logs, row, n):
 
 
 def get_min(game_stats_logs, row, n):
-    '''
+    """
     :param game_stats_logs: df, all previous game stats logs imported from sql
     :param row: pd.series, player id and game id
     :param n: int, size of ma
     :return: float, average mins the player played in n games before the given game
-    '''
+    """
     player_id = row['PERSON_ID']
     game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
     min_n = get_last_n_game_logs(game_stats_logs, player_id, game_id_o, n)['MINS'].mean()
@@ -105,26 +105,31 @@ def get_min(game_stats_logs, row, n):
 
 
 def get_min_cov(game_stats_logs, row, n):
-    '''
+    """
     :param game_stats_logs: df, all previous game stats logs imported from sql
     :param row: pd.series, player id and game id
     :param n: int, size of ma
     :return: float, cov of mins the player played in n games before the given game
-    '''
+    """
     player_id = row['PERSON_ID']
     game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
-    min_cov_n = get_last_n_game_logs(game_stats_logs, player_id, game_id_o, n)['MINS'].std() / \
-                get_last_n_game_logs(game_stats_logs, player_id, game_id_o, n)['MINS'].mean()
+    min_cov_n = get_last_n_game_logs(game_stats_logs,
+                                     player_id,
+                                     game_id_o,
+                                     n)['MINS'].std() / get_last_n_game_logs(game_stats_logs,
+                                                                             player_id,
+                                                                             game_id_o,
+                                                                             n)['MINS'].mean()
     return round(float(min_cov_n), 3)
 
 
 def get_sco_cov(game_stats_logs, row, n):
-    '''
+    """
     :param game_stats_logs: df, all previous game stats logs imported from sql
     :param row: pd.series, player id and game id
     :param n: int, size of ma
     :return: float, cov of scores the player get in n games before the given game
-    '''
+    """
     player_id = row['PERSON_ID']
     game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
     sco_cov_n = get_score_36(get_last_n_game_logs(game_stats_logs, player_id, game_id_o, n))[1]
