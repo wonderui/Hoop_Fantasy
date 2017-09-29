@@ -50,6 +50,34 @@ def get_players(games, all_players):
     return pd.merge(players, team_team, on='TEAM_ID')
 
 
+def get_players_p(games, game_stats_logs):
+    """
+    :param games: df, some games
+    :param game_stats_logs: df, all previous game stats logs imported from sql
+    :return: df, all players of the given games at the match date
+    """
+    players = pd.DataFrame()
+    for i in games.index:
+        players = players.append(game_stats_logs[(game_stats_logs['GAME_ID'] == games.iloc[i]['GAME_ID']) &
+                                                 (game_stats_logs['TEAM_ID'] == games.iloc[i]['HOME_TEAM_ID'])])
+        players = players.append(game_stats_logs[(game_stats_logs['GAME_ID'] == games.iloc[i]['GAME_ID']) &
+                                                 (game_stats_logs['TEAM_ID'] == games.iloc[i]['VISITOR_TEAM_ID'])])
+
+    players['Location'] = players.apply(lambda x: 'HOME' if x['TEAM_ID'] ==
+                                        int(games[games['GAME_ID'] == x['GAME_ID']]['HOME_TEAM_ID'])
+                                        else 'AWAY', axis=1)
+
+    team_team = pd.concat(
+            [games[['HOME_TEAM_ID', 'VISITOR_TEAM_ID']].rename(columns={'HOME_TEAM_ID': 'TEAM_ID',
+                                                                        'VISITOR_TEAM_ID': 'Against_Team_ID'}),
+             games[['VISITOR_TEAM_ID', 'HOME_TEAM_ID']].rename(columns={'VISITOR_TEAM_ID': 'TEAM_ID',
+                                                                        'HOME_TEAM_ID': 'Against_Team_ID'})])
+
+    return pd.merge(players, team_team,
+                    on='TEAM_ID')[['PLAYER_ID', 'TEAM_ID', 'Location', 'GAME_ID',
+                                   'Against_Team_ID']].rename(columns={'PLAYER_ID': 'PERSON_ID'})
+
+
 def get_last_n_game_logs(game_stats_logs, player_id, game_id, n):
     """
     :param game_stats_logs: df, all previous game stats logs imported from sql
