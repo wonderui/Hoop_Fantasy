@@ -164,4 +164,35 @@ def get_sco_cov(game_stats_logs, row, n):
     return round(float(sco_cov_n), 3)
 
 
+def get_exp_sco(players, game_stats_logs):
+    """
+    :param players: df, players list
+    :param game_stats_logs: df, all previous game stats logs imported from sql
+    :return: df, all players with their expect fantasy score
+    """
+    players['MA_20'] = players.apply(lambda x: get_ma(game_stats_logs, x, 20), axis=1)
+    print('ma20 complete!')
+    players['MA_10'] = players.apply(lambda x: get_ma(game_stats_logs, x, 10), axis=1)
+    print('ma10 complete!')
+    players['MA_5'] = players.apply(lambda x: get_ma(game_stats_logs, x, 5), axis=1)
+    print('ma5 complete!')
+    players['MIN_20'] = players.apply(lambda x: get_min(game_stats_logs, x, 20), axis=1)
+    print('min20 complete!')
+    players['MIN_10'] = players.apply(lambda x: get_min(game_stats_logs, x, 10), axis=1)
+    print('min10 complete!')
+    players['MIN_5'] = players.apply(lambda x: get_min(game_stats_logs, x, 5), axis=1)
+    print('min5 complete!')
+    players['MIN_COV_20'] = players.apply(lambda x: get_min_cov(game_stats_logs, x, 20), axis=1)
+    print('min_cov_20 complete!')
+    players['SCO_COV_20'] = players.apply(lambda x: get_sco_cov(game_stats_logs, x, 20), axis=1)
+    print('sco_cov_20 complete!')
+    players = players[players['SCO_COV_20'] > 0].copy()
+    print('sco cov less than 0 droped!')
+
+    players['EXP_SCO'] = round(players[['MA_20', 'MA_10', 'MA_5']].mean(axis=1) *
+                               players[['MIN_20', 'MIN_10', 'MIN_5']].mean(axis=1) / 36, 2)
+    print('all done!')
+    return players
+
+
 print('functions defined')
