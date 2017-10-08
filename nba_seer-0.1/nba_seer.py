@@ -103,6 +103,8 @@ def get_score_36(game_logs):
     stats['SCO'] = stats['PTS'] * 1 + stats['AST'] * 1.5 + stats['OREB'] * 1 + stats['DREB'] * 0.7 + \
         stats['STL'] * 2 + stats['BLK'] * 1.8 + stats['TO'] * -1 + \
         stats['FGM'] * 0.4 + (stats['FGA'] - stats['FGM']) * -1 + stats['FG3M'] * 0.5
+    stats['EFF'] = stats['SCO'] / 36
+    stats = stats[abs(stats['EFF']) <= 2.5]
     return stats['SCO'].mean(), stats['SCO'].std() / stats['SCO'].mean()
 
 
