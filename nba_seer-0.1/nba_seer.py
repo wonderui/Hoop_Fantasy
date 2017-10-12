@@ -8,6 +8,9 @@ import nba_py.team
 import pandas as pd
 import numpy as np
 
+import datetime
+import pytz
+
 old_settings = np.seterr(all='print')
 np.geterr()
 
@@ -166,12 +169,48 @@ def get_sco_cov(game_stats_logs, row, n):
     return round(float(sco_cov_n), 3)
 
 
+def last_n_games_days(game_stats_logs, row, n):
+    player_id = row['PERSON_ID']
+    game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
+    player_stats_logs = game_stats_logs[game_stats_logs['PLAYER_ID'] == player_id]
+    ordered_logs = player_stats_logs.sort_values('GAME_ID_O')
+    player_5g = ordered_logs[(ordered_logs['GAME_ID_O'] < game_id_o) &
+                             (ordered_logs['MINS'].notnull())].tail(n)
+    if len(player_5g) != 0:
+        min_d = datetime.datetime.strptime(player_5g['GAME_DATE_EST'].min()[:10], '%Y-%m-%d').date()
+        max_d = datetime.datetime.strptime(player_5g['GAME_DATE_EST'].max()[:10], '%Y-%m-%d').date()
+        return (max_d - min_d).days
+    else:
+        return None
+
+
+def days_rest(game_stats_logs, row):
+    player_id = row['PERSON_ID']
+    game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
+    player_stats_logs = game_stats_logs[game_stats_logs['PLAYER_ID'] == player_id]
+    ordered_logs = player_stats_logs.sort_values('GAME_ID_O')
+    last_game = ordered_logs[(ordered_logs['GAME_ID_O'] < game_id_o) &
+                             (ordered_logs['MINS'].notnull())].tail(1)
+    if len(last_game) != 0:
+        last_g_d = datetime.datetime.strptime(last_game['GAME_DATE_EST'].max()[:10], '%Y-%m-%d').date()
+        ustz = pytz.timezone('America/New_York')
+        us_time = datetime.datetime.now(ustz)
+        today = us_time.date()
+        return (today - last_g_d).days
+    else:
+        return None
+
+
 def get_exp_sco(players, game_stats_logs):
     """
     :param players: df, players list
     :param game_stats_logs: df, all previous game stats logs imported from sql
     :return: df, all players with their expect fantasy score
     """
+    players['5_g_d'] = players.apply(lambda x: last_n_games_days(game_stats_logs, x, 5), axis=1)
+    print('5games days complete!')
+    players['d_rest'] = players.apply(lambda x: days_rest(game_stats_logs, x), axis=1)
+    print('days rest complete!')
     players['MA_20'] = players.apply(lambda x: get_ma(game_stats_logs, x, 20), axis=1)
     print('ma20 complete!')
     players['MA_10'] = players.apply(lambda x: get_ma(game_stats_logs, x, 10), axis=1)

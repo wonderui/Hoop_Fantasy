@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="02acedae-28cf-4026-9a5f-0aa4af6bd6a7" name="Default" comment="" />
+    <list default="true" id="02acedae-28cf-4026-9a5f-0aa4af6bd6a7" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nba_seer-0.1/0_calculate.ipynb" afterPath="$PROJECT_DIR$/nba_seer-0.1/0_calculate.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nba_seer-0.1/0_grab_game_stats_logs.ipynb" afterPath="$PROJECT_DIR$/nba_seer-0.1/0_grab_game_stats_logs.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nba_seer-0.1/0_test_seer.ipynb" afterPath="$PROJECT_DIR$/nba_seer-0.1/0_test_seer.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nba_seer-0.1/nba_seer.py" afterPath="$PROJECT_DIR$/nba_seer-0.1/nba_seer.py" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,9 +23,11 @@
       <file leaf-file-name="nba_seer.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/nba_seer-0.1/nba_seer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1074">
-              <caret line="108" column="0" lean-forward="true" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="0" />
-              <folding />
+            <state relative-caret-position="242">
+              <caret line="181" column="35" lean-forward="true" selection-start-line="181" selection-start-column="35" selection-end-line="181" selection-end-column="35" />
+              <folding>
+                <element signature="e#41#54#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -73,8 +80,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -86,6 +91,8 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -347,13 +354,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/nba_seer-0.1/nba_seer.py</url>
-          <line>2</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
       <option name="time" value="2" />
     </breakpoint-manager>
     <watches-manager />
@@ -363,7 +363,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#41#54#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -371,7 +373,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#41#54#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -379,7 +383,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#41#54#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -387,7 +393,19 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#41#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nba_seer-0.1/nba_seer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#41#54#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -395,7 +413,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2115">
           <caret line="147" column="87" lean-forward="true" selection-start-line="147" selection-start-column="87" selection-end-line="147" selection-end-column="87" />
-          <folding />
+          <folding>
+            <element signature="e#41#54#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -403,7 +423,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#41#54#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -422,9 +444,11 @@
     <entry file="file://$PROJECT_DIR$/nba_seer.py" />
     <entry file="file://$PROJECT_DIR$/nba_seer-0.1/nba_seer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1074">
-          <caret line="108" column="0" lean-forward="true" selection-start-line="108" selection-start-column="0" selection-end-line="108" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="242">
+          <caret line="181" column="35" lean-forward="true" selection-start-line="181" selection-start-column="35" selection-end-line="181" selection-end-column="35" />
+          <folding>
+            <element signature="e#41#54#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
