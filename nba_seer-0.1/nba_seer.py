@@ -179,7 +179,7 @@ def last_n_games_days(game_stats_logs, row, n):
     if len(player_5g) != 0:
         min_d = datetime.datetime.strptime(player_5g['GAME_DATE_EST'].min()[:10], '%Y-%m-%d').date()
         max_d = datetime.datetime.strptime(player_5g['GAME_DATE_EST'].max()[:10], '%Y-%m-%d').date()
-        return (max_d - min_d).days
+        return (max_d - min_d).days + 1
     else:
         return None
 
@@ -196,7 +196,7 @@ def days_rest(game_stats_logs, row):
         ustz = pytz.timezone('America/New_York')
         us_time = datetime.datetime.now(ustz)
         today = us_time.date()
-        return (today - last_g_d).days
+        return (today - last_g_d).days - 1
     else:
         return None
 
