@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="02acedae-28cf-4026-9a5f-0aa4af6bd6a7" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nba_seer-0.1/0_calculate.ipynb" afterPath="$PROJECT_DIR$/nba_seer-0.1/0_calculate.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nba_seer-0.1/0_grab_game_stats_logs.ipynb" afterPath="$PROJECT_DIR$/nba_seer-0.1/0_grab_game_stats_logs.ipynb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nba_seer-0.1/0_test_seer.ipynb" afterPath="$PROJECT_DIR$/nba_seer-0.1/0_test_seer.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/nba_seer-0.1/nba_seer.py" afterPath="$PROJECT_DIR$/nba_seer-0.1/nba_seer.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -23,8 +20,8 @@
       <file leaf-file-name="nba_seer.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/nba_seer-0.1/nba_seer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="538">
-              <caret line="198" column="42" lean-forward="false" selection-start-line="198" selection-start-column="42" selection-end-line="198" selection-end-column="42" />
+            <state relative-caret-position="497">
+              <caret line="196" column="58" lean-forward="false" selection-start-line="196" selection-start-column="58" selection-end-line="196" selection-end-column="58" />
               <folding>
                 <element signature="e#41#54#0" expanded="true" />
               </folding>
@@ -464,8 +461,8 @@
     <entry file="file://$PROJECT_DIR$/nba_seer.py" />
     <entry file="file://$PROJECT_DIR$/nba_seer-0.1/nba_seer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="538">
-          <caret line="198" column="42" lean-forward="false" selection-start-line="198" selection-start-column="42" selection-end-line="198" selection-end-column="42" />
+        <state relative-caret-position="497">
+          <caret line="196" column="58" lean-forward="false" selection-start-line="196" selection-start-column="58" selection-end-line="196" selection-end-column="58" />
           <folding>
             <element signature="e#41#54#0" expanded="true" />
           </folding>

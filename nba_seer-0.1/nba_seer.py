@@ -170,6 +170,12 @@ def get_sco_cov(game_stats_logs, row, n):
 
 
 def last_n_games_days(game_stats_logs, row, n):
+    """
+    :param game_stats_logs: df, all previous game stats logs imported from sql
+    :param row: pd.series, player id and game id
+    :param n: int, size of the spread of games
+    :return: int, the days last for last n games
+    """
     player_id = row['PERSON_ID']
     game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
     player_stats_logs = game_stats_logs[game_stats_logs['PLAYER_ID'] == player_id]
@@ -185,6 +191,11 @@ def last_n_games_days(game_stats_logs, row, n):
 
 
 def days_rest(game_stats_logs, row):
+    """
+    :param game_stats_logs: df, all previous game stats logs imported from sql
+    :param row: pd.series, player id and game id
+    :return: int, the days player have rest till this game
+    """
     player_id = row['PERSON_ID']
     game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
     player_stats_logs = game_stats_logs[game_stats_logs['PLAYER_ID'] == player_id]
