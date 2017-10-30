@@ -212,6 +212,29 @@ def days_rest(game_stats_logs, row):
         return None
 
 
+def location_aff(game_stats_logs, row):
+    """
+    :param game_stats_logs: df, all previous game stats logs imported from sql
+    :param row: pd.series, player id and game id
+    :return: list, [0]home game affection, [1] away game affection
+    """
+    player_id = row['PERSON_ID']
+    game_id_o = row['GAME_ID'][3:5] + row['GAME_ID'][:3] + row['GAME_ID'][-5:]
+    player_stats_logs = game_stats_logs[game_stats_logs['PLAYER_ID'] == player_id].sort_values('GAME_ID_O')
+    player_stats_home = player_stats_logs[(player_stats_logs['LOCATION'] == 'HOME') &
+                                          (player_stats_logs['MINS'].notnull()) &
+                                          (player_stats_logs['GAME_ID_O'] < game_id_o)].tail(20)
+    home_score_20 = get_score_36(player_stats_home)[0]
+    player_stats_away = player_stats_logs[(player_stats_logs['LOCATION'] == 'AWAY') &
+                                          (player_stats_logs['MINS'].notnull()) &
+                                          (player_stats_logs['GAME_ID_O'] < game_id_o)].tail(20)
+    away_score_20 = get_score_36(player_stats_away)[0]
+    player_stats_all = player_stats_logs[(player_stats_logs['MINS'].notnull()) &
+                                         (player_stats_logs['GAME_ID_O'] < game_id_o)].tail(40)
+    recent_score_40 = get_score_36(player_stats_all)[0]
+    return home_score_20 / recent_score_40, away_score_20 / recent_score_40
+
+
 def get_exp_sco(players, game_stats_logs):
     """
     :param players: df, players list
@@ -240,9 +263,14 @@ def get_exp_sco(players, game_stats_logs):
     print('sco_cov_20 complete!')
     players = players[players['SCO_COV_20'] > 0].copy()
     print('sco cov less than 0 droped!')
+    players['home_aff'] = players.apply(lambda x: location_aff(game_stats_logs, x)[0], axis=1)
+    players['away_aff'] = players.apply(lambda x: location_aff(game_stats_logs, x)[1], axis=1)
+    print('location affect complete!')
 
     players['EXP_SCO'] = round(players[['MA_20', 'MA_10', 'MA_5']].mean(axis=1) *
                                players[['MIN_20', 'MIN_10', 'MIN_5']].mean(axis=1) / 36, 2)
+    players['EXP_SCO_L'] = players.apply(lambda x: x['EXP_SCO'] * x['home_aff'] if x['Location'] == 'HOME'
+                                         else x['EXP_SCO'] * x['away_aff'], axis=1)
     print('all done!')
     return players
 
