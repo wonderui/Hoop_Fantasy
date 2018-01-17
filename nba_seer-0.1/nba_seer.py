@@ -50,7 +50,9 @@ def get_players(games, all_players):
                                                                     'VISITOR_TEAM_ID': 'Against_Team_ID'}),
          games[['VISITOR_TEAM_ID', 'HOME_TEAM_ID']].rename(columns={'VISITOR_TEAM_ID': 'TEAM_ID',
                                                                     'HOME_TEAM_ID': 'Against_Team_ID'})])
-    return pd.merge(players, team_team, on='TEAM_ID')
+    players = pd.merge(players, team_team, on='TEAM_ID')
+    players = pd.merge(players, all_players[['PERSON_ID', 'DISPLAY_FIRST_LAST', 'TEAM_ABBREVIATION']], on='PERSON_ID')
+    return players
 
 
 def get_players_p(games, game_stats_logs):
@@ -67,14 +69,14 @@ def get_players_p(games, game_stats_logs):
                                                  (game_stats_logs['TEAM_ID'] == games.iloc[i]['VISITOR_TEAM_ID'])])
 
     players['Location'] = players.apply(lambda x: 'HOME' if x['TEAM_ID'] ==
-                                        int(games[games['GAME_ID'] == x['GAME_ID']]['HOME_TEAM_ID'])
-                                        else 'AWAY', axis=1)
+                                                            int(games[games['GAME_ID'] == x['GAME_ID']]['HOME_TEAM_ID'])
+    else 'AWAY', axis=1)
 
     team_team = pd.concat(
-            [games[['HOME_TEAM_ID', 'VISITOR_TEAM_ID']].rename(columns={'HOME_TEAM_ID': 'TEAM_ID',
-                                                                        'VISITOR_TEAM_ID': 'Against_Team_ID'}),
-             games[['VISITOR_TEAM_ID', 'HOME_TEAM_ID']].rename(columns={'VISITOR_TEAM_ID': 'TEAM_ID',
-                                                                        'HOME_TEAM_ID': 'Against_Team_ID'})])
+        [games[['HOME_TEAM_ID', 'VISITOR_TEAM_ID']].rename(columns={'HOME_TEAM_ID': 'TEAM_ID',
+                                                                    'VISITOR_TEAM_ID': 'Against_Team_ID'}),
+         games[['VISITOR_TEAM_ID', 'HOME_TEAM_ID']].rename(columns={'VISITOR_TEAM_ID': 'TEAM_ID',
+                                                                    'HOME_TEAM_ID': 'Against_Team_ID'})])
 
     return pd.merge(players, team_team,
                     on='TEAM_ID')[['PLAYER_ID', 'TEAM_ID', 'Location', 'GAME_ID',
@@ -103,9 +105,8 @@ def get_score_36(game_logs):
     convert_to_36 = lambda x: x[['PTS', 'AST', 'OREB', 'DREB', 'STL', 'BLK',
                                  'TO', 'FGM', 'FGA', 'FG3M']] * 36 / x['MINS']
     stats = game_logs.apply(convert_to_36, axis=1)
-    stats['SCO'] = stats['PTS'] * 1 + stats['AST'] * 1.5 + stats['OREB'] * 1 + stats['DREB'] * 0.7 + \
-        stats['STL'] * 2 + stats['BLK'] * 1.8 + stats['TO'] * -1 + \
-        stats['FGM'] * 0.4 + (stats['FGA'] - stats['FGM']) * -1 + stats['FG3M'] * 0.5
+    stats['SCO'] = stats['PTS'] * 1 + stats['AST'] * 1.5 + stats['OREB'] * 1.2 + stats['DREB'] * 1.2 + \
+        stats['STL'] * 2 + stats['BLK'] * 2 + stats['TO'] * -1
     stats['EFF'] = stats['SCO'] / 36
     stats = stats[abs(stats['EFF']) <= 2.5]
     return stats['SCO'].mean(), stats['SCO'].std() / stats['SCO'].mean()
@@ -270,7 +271,7 @@ def get_exp_sco(players, game_stats_logs):
     players['EXP_SCO'] = round(players[['MA_20', 'MA_10', 'MA_5']].mean(axis=1) *
                                players[['MIN_20', 'MIN_10', 'MIN_5']].mean(axis=1) / 36, 2)
     players['EXP_SCO_L'] = players.apply(lambda x: x['EXP_SCO'] * x['home_aff'] if x['Location'] == 'HOME'
-                                         else x['EXP_SCO'] * x['away_aff'], axis=1)
+    else x['EXP_SCO'] * x['away_aff'], axis=1)
     print('all done!')
     return players
 
